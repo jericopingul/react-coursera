@@ -1,6 +1,9 @@
 import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Loading } from './LoadingComponent';
+import { Fade, Stagger } from 'react-animation-components';
+
 
 function RenderLeader({leader}) {
   return (
@@ -19,13 +22,38 @@ function RenderLeader({leader}) {
 
 function About(props) {
 
-    const leaders = props.leaders.map((leader) => {
-        return (
-          <RenderLeader key={leader.id} leader={leader} />
-        );
-    });
+    let leaders = []
 
-    return(
+    if (props.leaders.isLoading) {
+        leaders = (
+            <div className="container">
+                <div className="row">
+                    <Loading />
+                </div>
+            </div>
+        );
+    } else if (props.leaders.errMess) {
+        
+        leaders = (
+            <div className="container">
+                <div className="row">
+                    <h4>{props.errMess}</h4>
+                </div>
+            </div>
+        );
+    } else {
+        
+        leaders = props.leaders.leaders.map((leader) => {
+            return (
+                <Fade key={leader.id} in>
+                    <RenderLeader key={leader.id} leader={leader} />
+                </Fade>
+            );
+        });
+        
+        
+    }
+    return (
         <div className="container">
             <div className="row">
                 <Breadcrumb>
@@ -35,7 +63,7 @@ function About(props) {
                 <div className="col-12">
                     <h3>About Us</h3>
                     <hr />
-                </div>                
+                </div>
             </div>
             <div className="row row-content">
                 <div className="col-12 col-md-6">
@@ -81,7 +109,9 @@ function About(props) {
                 </div>
                 <div className="col-12">
                     <Media list>
-                        {leaders}
+                        <Stagger in >
+                            {leaders}
+                        </Stagger>
                     </Media>
                 </div>
             </div>
